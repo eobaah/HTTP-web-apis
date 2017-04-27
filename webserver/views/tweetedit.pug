@@ -1,0 +1,14 @@
+extends layout
+
+block content
+
+  .container
+    .edit
+      h1 #{editTweet.id}
+      label
+        | Message: 
+      input(id="msg", name="message", value=editTweet.text)
+      label
+        | Image: 
+      input(id="img", name="entities.media.media_url")
+      input(id="submit", type="submit")

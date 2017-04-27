@@ -25,33 +25,60 @@ const twitThing = new twitterApi({
   access_token_secret:  'hJQhwK9mGpwkGIyuY0SOD0NPICZnzxXLIica1eg46bzni'
 })
 
+router.get( '/home', (request, response, next ) => {
+  twitThing.get( 'statuses/user_timeline', { 'q': { screen_name: 'resoltz', recent:'mixed'} }, (error, tweets, twitterResponse) => {
+    response.json( tweets )
+  })
+})
+
 router.get( '/feed', (request, response, next ) => {
   twitThing.get( 'statuses/user_timeline', { 'q': { screen_name: 'resoltz', recent:'mixed'} }, (error, tweets, twitterResponse) => {
-    const pugTweets = []
-    for(let tweet in tweets) {
-      pugTweets.push({
-        message: tweets[tweet].text,
-        date: tweets[tweet].created_at
-      })
-    }
-    response.render('tweetfeed', {pugTweets})
+    response.render('tweetfeed', {
+      tweets
+    })
   })
 })
 
 router.get('/create', (request, response, next) => {
+  console.log( "Lagos is here ======> " )
   response.render('tweetcreate')
 })
 
 router.post('/create', (request, response, next) => {
-  twitThing.post( 'statuses/update', {status: request.body.msg}, function(error, tweet, tweetResponse) {
+  const newTweet = {
+    status: request.body.status,
+    // media_ids: ['12345']
+  }
+
+  console.log("new tweet==========>", JSON.stringify(newTweet));
+  twitThing.post( 'statuses/update', newTweet, (error, tweet, tweetResponse) => {
     if (!error) {
       console.log(tweet);
-      return response.send('Success').status(200)
+      response.send('/feed')
+    } else {
+      console.log(error)
+      response.send('/error')
     }
-    console.log(error)
-    response.send('Error: ' + error[0].message).status(500)
   })
 })
+
+router.get('/edit/:id', (request, response, next) => {
+  let id = request.params.id
+  let editTweet
+  twitThing.get( 'statuses/user_timeline', { 'q': { screen_name: 'resoltz', recent:'mixed'} }, (error, tweets, twitterResponse) => {
+    for (tweet in tweets) {
+      console.log( "id================>:",parseInt(tweets[tweet].id) === parseInt(id ) )
+      if(parseInt(tweets[tweet].id) === parseInt(id )) {
+        editTweet = tweets[tweet]
+      }
+    }
+    console.log( "editTweet:", editTweet )
+    response.render('tweetedit', {
+      editTweet
+    })
+  })
+})
+
 /*
 router.get('/pinterest/callback', (request, response, next) => {
   const params = {

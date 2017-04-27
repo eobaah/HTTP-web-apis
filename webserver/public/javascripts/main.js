@@ -1,27 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const msg = document.querySelector('#msg')
-  const submit = document.querySelector('#submit')
+  const tweetForm = document.querySelector('.createTweetForm')
 
-  submit.addEventListener('click', () => {
+  tweetForm.addEventListener('submit', (event) => {
+    event.preventDefault()
+    const status = document.getElementById( 'msg' ).value
+    const media_url = document.getElementById( 'img' ).value
+    const body = JSON.stringify({ status, media_url })
+    console.log( "body:", body )
     var init = {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       mode: 'cors',
       cache: 'default',
-      body: JSON.stringify({msg: msg.value})
+      body: body
     }
     fetch('/create', init)
-    .then( response => response.text())
-    .then( response => {
-      console.log(response)
+    .then( fetchContainer => {
+      // localStorage.setItem('log', fetchContainer)
+      return fetchContainer.text()
     })
-    // const xhr = new XMLHttpRequest()
-    // xhr.open('POST', 'http://127.0.0.1:3000/create')
-    // xhr.onreadystatechange = (...events) => {
-    //   console.log(events)
-    // }
-    // xhr.setRequestHeader('Access-Control-Allow-Origin', true)
-    // xhr.send(msg.text)
-
+    .then( redirectPath => {
+      // localStorage.setItem('log', redirectPath)
+      window.location.href = redirectPath
+    })
+    .catch( error => {
+      console.log(error)
+    })
   })
 })
