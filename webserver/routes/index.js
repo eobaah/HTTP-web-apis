@@ -40,17 +40,13 @@ router.get( '/feed', (request, response, next ) => {
 })
 
 router.get('/create', (request, response, next) => {
-  console.log( "Lagos is here ======> " )
   response.render('tweetcreate')
 })
 
 router.post('/create', (request, response, next) => {
   const newTweet = {
     status: request.body.status,
-    // media_ids: ['12345']
   }
-
-  console.log("new tweet==========>", JSON.stringify(newTweet));
   twitThing.post( 'statuses/update', newTweet, (error, tweet, tweetResponse) => {
     if (!error) {
       console.log(tweet);
@@ -67,17 +63,49 @@ router.get('/edit/:id', (request, response, next) => {
   let editTweet
   twitThing.get( 'statuses/user_timeline', { 'q': { screen_name: 'resoltz', recent:'mixed'} }, (error, tweets, twitterResponse) => {
     for (tweet in tweets) {
-      console.log( "id================>:",parseInt(tweets[tweet].id) === parseInt(id ) )
       if(parseInt(tweets[tweet].id) === parseInt(id )) {
         editTweet = tweets[tweet]
       }
     }
-    console.log( "editTweet:", editTweet )
     response.render('tweetedit', {
       editTweet
     })
   })
 })
+
+router.put('/edit/:id', (request, response, next) => {
+  let id = request.params.id
+  let editTweet = request.body
+  twitThing.post( 'statuses/update', { 'q': { screen_name: 'resoltz', recent:'mixed'} }, (error, tweets, twitterResponse) => {
+    for (tweet in tweets) {
+      if(parseInt(tweets[tweet].id) === parseInt(id )) {
+        editTweet = tweets[tweet]
+      }
+    }
+    response.render('tweetedit', {
+      editTweet
+    })
+  })
+})
+
+router.get('/delete/:id', (request, response, next) => {
+  let shitsNGiggles = request.params.id
+    response.render('tweetDelete', {
+      shitsNGiggles
+    })
+  })
+
+router.delete('/delete/:id_str', (request, response, next) => {
+  let id_str = request.params.id
+  console.log( "id:", id_str )
+  twitThing.post( 'statuses/destroy/'+id_str+'.json', (error, tweets, twitterResponse) => {
+    //console.log( "======> twitterResponse", twitterResponse )
+    if ( error ) console.log( error )
+    response.send('/feed')
+  })
+})
+
+
 
 /*
 router.get('/pinterest/callback', (request, response, next) => {

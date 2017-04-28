@@ -3,8 +3,8 @@ extends layout
 block content
 
   .container
-    .edit
-      h1 #{editTweet.id}
+    h1 #{editTweet.id}
+    form.editTweetForm
       label
         | Message: 
       input(id="msg", name="message", value=editTweet.text)

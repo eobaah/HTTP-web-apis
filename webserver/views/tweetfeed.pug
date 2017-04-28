@@ -22,6 +22,6 @@ block content
             a(id=tweet.id, href=`/edit/${tweet.id}`)
               | Edit tweet
           .deleteTweetBtn.edits
-            a(id=tweet.id, href='/delete')
+            a(id=tweet.id, href=`/delete/${tweet.id_str}`)
               | Delete tweet
           

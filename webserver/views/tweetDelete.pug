@@ -1,0 +1,17 @@
+extends layout
+
+block content
+
+  .container
+    .deleteContainer
+      h1 do you want to delete?
+      h5 #{shitsNGiggles}
+      .deleteButtonContainer
+        a(href=`javascript:deleteTweet(${shitsNGiggles})`)
+          button(value="Yes")
+            | Yes
+        a(href=`/feed`)
+          button(value="No")
+            | No
+        
+  script(src='/javascripts/main.js')
