@@ -6,21 +6,21 @@ const passport = require('passport')
 const twitterHandler = require('../apihandlers/handler-twitter')
 
 router.get('/', (request, response, next) => {
-  response.json({ test: 'this is a test' })
+  response.status(200).json({ test: 'this is a test' })
 })
 
-router.get('/auth/twitter', passport.authenticate('twitter'))
+router.get( '/auth/twitter', passport.authenticate('twitter') )
 router.get( '/auth/twitter/callback',
   passport.authenticate('twitter', { failureRedirect: '/error' }),
-  (req, res) => {
-    res.send('successful authentication')
+  (request, response) => {
+    response.status(200)).send('successful authentication')
   })
 
 router.get( '/home', twitterHandler.getTimeline )
 router.get( '/feed', twitterHandler.getFeed )
 
 router.get('/create', (request, response, next) => {
-  response.render('tweetcreate')
+  response.status(200).render('tweetcreate')
 })
 router.post('/create', twitterHandler.createTweet )
 
@@ -39,7 +39,7 @@ router.get('/edit/:id', (request, response, next) => {
           editTweet = tweets[tweet]
         }
       }
-      response.render('tweetedit', {
+      response.status(200).render('tweetedit', {
         editTweet
       })
     })
@@ -51,13 +51,17 @@ router.put('/edit/:id', ( request, response, next ) => {
     'statuses/update.json',
     { status:request.body.status },
     (error, tweets, twitterResponse) => {
-      response.send('/feed')
+      if ( error ) {
+        response.status(405).send( error )
+      } else {
+        response.status(202).send('/feed')
+      }
   })
 })
 
 router.get('/delete/:id', (request, response, next) => {
   let id_str = request.params.id
-    response.render('tweetDelete', {
+    response.status(200).render('tweetDelete', {
       id_str
     })
 })
