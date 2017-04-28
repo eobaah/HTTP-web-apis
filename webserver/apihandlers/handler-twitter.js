@@ -13,7 +13,7 @@ const twitterHandler = {
           let err = new Error('User timeline not fetched.')
           console.log( error )
         }
-        response.json( tweets )
+        response.status(200).json( tweets )
     })
   },
 
@@ -26,9 +26,9 @@ const twitterHandler = {
       },
       (error, tweets, twitterResponse) => {
         if ( error ) {
-          next( error )
+          response.status(406).send(error)
         } else {
-          response.render('tweetfeed', {
+          response.status(200).render('tweetfeed', {
             tweets
           })
 
@@ -42,9 +42,9 @@ const twitterHandler = {
     }
     twitterAPI.post( 'statuses/update', newTweet, (error, tweet, tweetResponse) => {
       if (!error) {
-        response.send('/feed')
+        response.status(201).send('/feed')
       } else {
-        response.send('/error')
+        response.status(400).send('/error')
       }
     })
   },
@@ -54,7 +54,7 @@ const twitterHandler = {
     twitterAPI.post(
       'statuses/destroy/'+id_str+'.json',
       (error, tweets, twitterResponse) => {
-          response.send('/feed')
+          response.status(202).send('/feed')
     })
   }
 }

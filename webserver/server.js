@@ -39,6 +39,16 @@ server.use(express.static(path.join(__dirname, 'public')))
 server.set('views', path.join(__dirname, 'views'))
 server.set('view engine', 'pug');
 
+server.use( (request, response, next ) => {
+    if (request.method === "OPTIONS") {
+      response.header('Access-Control-Allow-Origin', request.headers.origin);
+    } else {
+      response.header('Access-Control-Allow-Origin', '*');
+    }
+
+    next()
+})
+
 server.use( routes )
 
 /* Error Handlers */
