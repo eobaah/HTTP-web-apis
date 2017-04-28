@@ -8,7 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = JSON.stringify({ status, media_url })
     var init = {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Origin': 'http://127.0.0.1'
+      },
       mode: 'cors',
       cache: 'default',
       body: body

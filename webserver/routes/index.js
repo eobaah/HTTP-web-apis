@@ -3,6 +3,8 @@ const router = express.Router()
 const twitterAPI = require('../config/twitterAPI')
 const passport = require('passport')
 
+const twitterHandler = require('../apihandlers/handler-twitter')
+
 router.get('/', (request, response, next) => {
   response.json({ test: 'this is a test' })
 })
@@ -14,56 +16,13 @@ router.get( '/auth/twitter/callback',
     res.send('successful authentication')
   })
 
-router.get( '/home', (request, response, next ) => {
-  twitterAPI.get(
-    'statuses/user_timeline',
-    { 'q': {
-      screen_name: 'resoltz',
-      recent:'mixed'}
-    },
-    (error, tweets, twitterResponse) => {
-      if ( error ) {
-        let err = new Error('User timeline not fetched.')
-        next(err)
-      }
-      response.json( tweets )
-  })
-})
-
-router.get( '/feed', (request, response, next ) => {
-  twitterAPI.get(
-    'statuses/user_timeline',
-    { 'q': {
-      screen_name: 'resoltz',
-      recent:'mixed'}
-    },
-    (error, tweets, twitterResponse) => {
-      if ( error ) {
-        next( error )
-      } else {
-        response.render('tweetfeed', {
-          tweets
-        })
-
-      }
-  })
-})
+router.get( '/home', twitterHandler.getTimeline )
+router.get( '/feed', twitterHandler.getFeed )
 
 router.get('/create', (request, response, next) => {
   response.render('tweetcreate')
 })
-router.post('/create', (request, response, next) => {
-  const newTweet = {
-    status: request.body.status,
-  }
-  twitterAPI.post( 'statuses/update', newTweet, (error, tweet, tweetResponse) => {
-    if (!error) {
-      response.send('/feed')
-    } else {
-      response.send('/error')
-    }
-  })
-})
+router.post('/create', twitterHandler.createTweet )
 
 router.get('/edit/:id', (request, response, next) => {
   let id = request.params.id
@@ -101,15 +60,7 @@ router.get('/delete/:id', (request, response, next) => {
     response.render('tweetDelete', {
       id_str
     })
-  })
-
-router.delete('/delete/:id_str', (request, response, next) => {
-  let id_str = request.params.id_str
-  twitterAPI.post(
-    'statuses/destroy/'+id_str+'.json',
-    (error, tweets, twitterResponse) => {
-        response.send('/feed')
-  })
 })
+router.delete('/delete/:id_str', twitterHandler.deleteTweet )
 
 module.exports = router
